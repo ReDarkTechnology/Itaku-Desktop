@@ -103,6 +103,7 @@ namespace ItakuDesktop
         private void WebBrowser_SourceChanged(object sender, CoreWebView2SourceChangedEventArgs e)
         {
             UrlTextBox.Text = webBrowser.Source.AbsoluteUri;
+            ChangeTitle(webBrowser.CoreWebView2.DocumentTitle);
             CheckNotifications();
         }
 
