@@ -1,0 +1,6 @@
+/* Disable click on text in content warnings for posts. Right now,*/
+/* clicking on the text doesn't open the post, you have to click*/
+/* outside of it. */
+mat-card-content .accent-link.maturity-text.ng-star-inserted {
+    pointer-events: none;
+}

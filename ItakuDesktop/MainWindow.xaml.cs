@@ -59,6 +59,7 @@ namespace ItakuDesktop
                 return;
             }
 
+            var envOptions = new CoreWebView2EnvironmentOptions(null, null, "117.0.1988.0") { AreBrowserExtensionsEnabled = true };
             var envTask = CoreWebView2Environment.CreateAsync(browserPath, "ProfileData".FixPath());
             envTask.Wait();
             var webViewEnvironment = envTask.Result;
@@ -116,6 +117,13 @@ namespace ItakuDesktop
             checkMenuItem = trayContextMenu.Items.Add("Disable background reload");
             checkMenuItem.Click += (s, a) => SetReloadToggle();
 
+            var extensionContext = trayContextMenu.Items.Add("Enable enhancement extension");
+            extensionContext.Click += (s, a) =>
+            {
+                if (Directory.Exists("Extensions/itaku-enhancement-suite".FixPath()) && isCoreInitialized)
+                    LoadEnhancementExtension();
+            };
+
             trayContextMenu.Items.Add("-");
 
             var openContext = trayContextMenu.Items.Add("Open");
@@ -171,9 +179,9 @@ namespace ItakuDesktop
         #region Events
         private void CoreWebView2_NavigationStarting(object sender, CoreWebView2NavigationStartingEventArgs e)
         {
-            if(!e.Uri.Contains("://itaku.ee/"))
+            if(!e.Uri.Contains("://itaku.ee"))
             {
-                if(MessageBox.Show($"This webpage leads to {new Uri(e.Uri).Host}, are you sure you want to go there?", "Warning", MessageBoxButton.YesNo) == MessageBoxResult.Yes)
+                if(MessageBox.Show($"This webpage leads to {e.Uri}, are you sure you want to go there?", "Warning", MessageBoxButton.YesNo) == MessageBoxResult.Yes)
                     Process.Start(e.Uri);
                 e.Cancel = true;
             }
@@ -218,7 +226,7 @@ namespace ItakuDesktop
         private void UrlTextBox_KeyDown(object sender, KeyEventArgs e)
         {
             if(e.Key == Key.Enter)
-                webBrowser.NavigateToString(UrlTextBox.Text);
+                webBrowser.Source = new Uri(UrlTextBox.Text);
             
             if (e.Key == Key.Escape)
                 UrlTextBox.Text = webBrowser.Source.AbsoluteUri;
@@ -347,6 +355,36 @@ namespace ItakuDesktop
         }
 
         public Color GetColor(string hex) => (Color)ColorConverter.ConvertFromString(hex);
+        #endregion
+
+        #region Extensions
+        public CoreWebView2BrowserExtension enhancementExt;
+        public async void LoadEnhancementExtension()
+        {
+            Console.WriteLine("INFO: WebBrowser Version = " + webBrowser.CoreWebView2.Environment.BrowserVersionString);
+            var version = GetBrowserVersions();
+            if (version[0] >= 117)
+            {
+                enhancementExt = await webBrowser.CoreWebView2.Profile.AddBrowserExtensionAsync("Extensions/itaku-enhancement-suite".FixPath());
+                await enhancementExt.EnableAsync(true);
+            }
+            else
+            {
+                MessageBox.Show($"Your edge version doesn't support WebView2 extensions yet: {webBrowser.CoreWebView2.Environment.BrowserVersionString}");
+            }
+        }
+
+        public int[] GetBrowserVersions()
+        {
+            string[] split = webBrowser.CoreWebView2.Environment.BrowserVersionString.Split('.');
+            int[] versions = new int[split.Length];
+            for (int i = 0; i < split.Length; i++)
+            {
+                if (int.TryParse(split[i], out int version))
+                    versions[i] = version;
+            }
+            return versions;
+        }
         #endregion
 
         #region Utility

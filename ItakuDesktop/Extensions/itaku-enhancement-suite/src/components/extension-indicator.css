@@ -1,0 +1,7 @@
+app-header mat-toolbar a.mat-ripple.logo mat-icon[data-mat-icon-name="itaku"]::after {
+    content: '*';
+    display: block;
+    position: absolute;
+    right: 0;
+    top: 0;
+}

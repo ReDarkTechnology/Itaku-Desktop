@@ -1,0 +1,25 @@
+/* Hides follow counts from your main profile unless you click on it */
+.ItakuEnhanced--hideFollowerCounts app-profile .mat-tab-links a.mat-tab-link:nth-child(4):not(.mat-tab-label-active) .profile-badge {
+    display: none;
+}
+
+/* Hides follow counts from your main profile all the time */
+.ItakuEnhanced--hideFollowerCounts app-profile .mat-tab-links a.mat-tab-link:nth-child(4) .profile-badge {
+    display: none;
+}
+
+/* Hide follow counts from pop-up profiles and user cards. */
+.ItakuEnhanced--hideFollowerCounts mat-card-actions button[mattooltip="Follow user"] .mat-button-wrapper {
+    font-size: 0;
+}
+
+.ItakuEnhanced--hideFollowerCounts mat-card-actions button[mattooltip="Follow user"] .mat-button-wrapper mat-icon {
+    vertical-align: top;
+}
+
+.ItakuEnhanced--hideFollowerCounts mat-card-actions button[mattooltip="Follow user"] .mat-button-wrapper::after {
+    content: 'Follow user';
+    font-size: 14px;
+    display: inline-block;
+    margin-left: 0.25em;
+}

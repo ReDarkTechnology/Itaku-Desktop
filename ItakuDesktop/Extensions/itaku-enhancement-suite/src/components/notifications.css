@@ -1,0 +1,15 @@
+span[data-itakuenhanced-processed="true"] + br {
+    display: none;
+}
+
+span[data-itakuenhanced-processed="true"] > span {
+    opacity: 0.85;
+}
+
+.ItakuEnhanced--notificationDescription {
+    font-size: 0.9em;
+}
+
+.ItakuEnhanced--notificationDescription br {
+    display: none;
+}

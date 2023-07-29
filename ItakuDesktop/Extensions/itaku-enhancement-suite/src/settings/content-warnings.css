@@ -1,0 +1,55 @@
+.ItakuEnhanced__CWRegex .card {
+    min-height: 200px;
+    overflow: visible;
+    margin-top: -0.5em;
+    margin-bottom: 1em;
+}
+
+.ItakuEnhanced__PositiveRegex {
+  background: none;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  z-index: 10;
+
+  position: absolute;
+  box-sizing: border-box;
+  height: 100%;
+  width: 100%;
+  resize: none;
+}
+
+.ItakuEnhanced__NegativeRegex {
+  background: none;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  z-index: 10;
+
+  position: absolute;
+  box-sizing: border-box;
+  height: 100%;
+  width: 100%;
+  resize: none;
+}
+
+.yellow-dark .ItakuEnhanced__PositiveRegex,
+.yellow-dark .ItakuEnhanced__NegativeRegex,
+.yellow-amber-navy-theme .ItakuEnhanced__PositiveRegex,
+.yellow-amber-navy-theme .ItakuEnhanced__NegativeRegex,
+.rain-dusk-theme .ItakuEnhanced__PositiveRegex,
+.rain-dusk-theme .ItakuEnhanced__NegativeRegex,
+.sky-pink-navy-theme .ItakuEnhanced__PositiveRegex,
+.sky-pink-navy-theme .ItakuEnhanced__NegativeRegex {
+    color: white;
+}
+
+
+.sky-pink-light-theme .ItakuEnhanced__PositiveRegex,
+.sky-pink-light-theme .ItakuEnhanced__NegativeRegex,
+.indigo-pink-light-theme .ItakuEnhanced__PositiveRegex,
+.indigo-pink-light-theme .ItakuEnhanced__NegativeRegex,
+.brown-wine-light-theme .ItakuEnhanced__PositiveRegex,
+.brown-wine-light-theme .ItakuEnhanced__NegativeRegex {
+    color: black;
+}
