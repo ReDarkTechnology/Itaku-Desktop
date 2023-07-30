@@ -80,8 +80,22 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="AddProfile.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="AddProfile.Designer.cs">
+      <DependentUpon>AddProfile.cs</DependentUpon>
+    </Compile>
+    <Compile Include="ProfileInfo.cs" />
+    <Compile Include="SettingsWindow.xaml.cs">
+      <DependentUpon>SettingsWindow.xaml</DependentUpon>
+    </Compile>
     <Compile Include="WindowsUtil.cs" />
     <Page Include="ButtonTemplate.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="IconDictionary.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -102,6 +116,10 @@
       <DependentUpon>MainWindow.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
+    <Page Include="SettingsWindow.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="PathFixer.cs" />
@@ -118,6 +136,9 @@
       <DependentUpon>Settings.settings</DependentUpon>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
     </Compile>
+    <EmbeddedResource Include="AddProfile.resx">
+      <DependentUpon>AddProfile.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="ItakuResources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>ItakuResources.Designer.cs</LastGenOutput>
@@ -144,6 +165,15 @@
   <ItemGroup>
     <Folder Include="Extensions\" />
   </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\favicon-blue.ico" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\favicon-dusk.ico" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\favicon-light.ico" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="..\packages\Microsoft.Web.WebView2.1.0.1988-prerelease\build\Microsoft.Web.WebView2.targets" Condition="Exists('..\packages\Microsoft.Web.WebView2.1.0.1988-prerelease\build\Microsoft.Web.WebView2.targets')" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
@@ -153,6 +183,6 @@
     <Error Condition="!Exists('..\packages\Microsoft.Web.WebView2.1.0.1988-prerelease\build\Microsoft.Web.WebView2.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\Microsoft.Web.WebView2.1.0.1988-prerelease\build\Microsoft.Web.WebView2.targets'))" />
   </Target>
   <PropertyGroup>
-    <PostBuildEvent>XCOPY "$(SolutionDir)ItakuDesktop\Extensions" "$(TargetDir)ProfileData\EBWebView\Default\Extensions\" /S /Y</PostBuildEvent>
+    <PostBuildEvent>XCOPY "$(SolutionDir)ItakuDesktop\Extensions" "$(TargetDir)Extensions\" /S /Y</PostBuildEvent>
   </PropertyGroup>
 </Project>

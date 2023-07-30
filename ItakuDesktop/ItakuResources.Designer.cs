@@ -63,6 +63,36 @@ namespace ItakuDesktop {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Icon similar to (Icon).
         /// </summary>
+        internal static System.Drawing.Icon favicon_blue {
+            get {
+                object obj = ResourceManager.GetObject("favicon_blue", resourceCulture);
+                return ((System.Drawing.Icon)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Icon similar to (Icon).
+        /// </summary>
+        internal static System.Drawing.Icon favicon_dusk {
+            get {
+                object obj = ResourceManager.GetObject("favicon_dusk", resourceCulture);
+                return ((System.Drawing.Icon)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Icon similar to (Icon).
+        /// </summary>
+        internal static System.Drawing.Icon favicon_light {
+            get {
+                object obj = ResourceManager.GetObject("favicon_light", resourceCulture);
+                return ((System.Drawing.Icon)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Icon similar to (Icon).
+        /// </summary>
         internal static System.Drawing.Icon favicon_yellow {
             get {
                 object obj = ResourceManager.GetObject("favicon_yellow", resourceCulture);

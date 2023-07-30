@@ -20,6 +20,7 @@ using HtmlAgilityPack;
 using NotifyIcon = System.Windows.Forms.NotifyIcon;
 using ContextMenuStrip = System.Windows.Forms.ContextMenuStrip;
 using ToolStripItem = System.Windows.Forms.ToolStripItem;
+using System.Windows.Media.Imaging;
 #endregion
 
 namespace ItakuDesktop
@@ -30,18 +31,41 @@ namespace ItakuDesktop
     public partial class MainWindow : Window
     {
         #region Variables
+        public static SettingsWindow settings;
+        public static MainWindow window;
         public WebView2 webBrowser;
         public Timer timer;
+        public ProfileInfo profileInfo;
 
         public NotifyIcon trayIcon;
         public ContextMenuStrip trayContextMenu;
         public ToolStripItem startupMenuItem;
         public ToolStripItem checkMenuItem;
+        public ToolStripItem extensionMenuItem;
 
         const string notificationBadgeXPath = "//*[@id=\"mat-badge-content-5\"]";
 
+        public string WebView2Path;
+        public string ProfilePath;
+        public string SettingsPath;
+        public bool customProfile;
+
         public bool isAtStartup;
         public bool reloadToCheckNotification = true;
+        public bool hideToTray = true;
+        public bool isEnhanced;
+        public bool queueEnhance;
+        private int _reloadInterval = 5;
+        public int reloadInterval
+        {
+            get => _reloadInterval;
+            set
+            {
+                _reloadInterval = value;
+                timer?.Change(0, 60000 * value);
+            }
+        }
+
         public int notificationCount;
         public bool isCoreInitialized;
         private bool dontClose = true;
@@ -50,18 +74,39 @@ namespace ItakuDesktop
         #region Initialization
         public MainWindow()
         {
+            System.Windows.Forms.Application.EnableVisualStyles();
+            System.Windows.Forms.Application.SetCompatibleTextRenderingDefault(false);
+            window = this;
             string browserPath = null;
-            if (Directory.Exists("WebView2".FixPath()))
-                browserPath = "WebView2".FixPath();
+            settings = new SettingsWindow();
+
+            WebView2Path = "WebView2".FixPath();
+            ProfilePath = "ProfileData".FixPath();
+            SettingsPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "Itaku", "settings.json");
+            Console.WriteLine(SettingsPath);
+            LoadSettings();
+            LoadArgs();
+
+            if (Directory.Exists(WebView2Path))
+                browserPath = WebView2Path;
             else if(!WebViewIsInstalled())
             {
-                MessageBox.Show("You haven't installed any WebView2 Runtime, please download and install it first!", "Error");
+                MessageBox.Show("You haven't installed any WebView2 Runtime - maybe you don't have Microsoft Edge, please download and install it first!", "Itaku: Error");
                 return;
             }
 
-            var envOptions = new CoreWebView2EnvironmentOptions(null, null, "117.0.1988.0") { AreBrowserExtensionsEnabled = true };
-            var envTask = CoreWebView2Environment.CreateAsync(browserPath, "ProfileData".FixPath());
+            var envOptions = new CoreWebView2EnvironmentOptions() { AreBrowserExtensionsEnabled = true };
+            var envTask = CoreWebView2Environment.CreateAsync(browserPath, ProfilePath);
             envTask.Wait();
+            if(!customProfile)
+            {
+                var profileJson = Path.Combine(ProfilePath, "profile.json");
+                if (!File.Exists(profileJson))
+                {
+                    profileInfo = new ProfileInfo() { name = "_Default_INTERNAL", path = profileJson };
+                    profileInfo.Save(profileJson);
+                }
+            }
             var webViewEnvironment = envTask.Result;
 
             InitializeComponent();
@@ -73,8 +118,7 @@ namespace ItakuDesktop
             ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12;
             webBrowser.EnsureCoreWebView2Async(webViewEnvironment);
 
-            timer = new Timer((e) => OnTimerElapsed(), null, 0, 1000 * 60 * 5);
-
+            timer = new Timer((e) => OnTimerElapsed(), null, 0, 60000 * reloadInterval);
             mainGrid.Children.Insert(1, webBrowser);
             webBrowser.VerticalAlignment = VerticalAlignment.Stretch;
             webBrowser.HorizontalAlignment = HorizontalAlignment.Stretch;
@@ -86,7 +130,24 @@ namespace ItakuDesktop
             InitializeNotifyIcon();
         }
 
-        private void WebBrowser_CoreWebView2InitializationCompleted(object sender, CoreWebView2InitializationCompletedEventArgs e)
+        public void LoadArgs()
+        {
+            string[] args = Environment.GetCommandLineArgs();
+            foreach (var arg in args)
+            {
+                if(Directory.Exists(arg))
+                {
+                    var profilePath = Path.Combine(arg, "profile.json");
+                    if (File.Exists(profilePath))
+                    {
+                        ProfilePath = arg;
+                        customProfile = true;
+                    }
+                }
+            }
+        }
+
+        private async void WebBrowser_CoreWebView2InitializationCompleted(object sender, CoreWebView2InitializationCompletedEventArgs e)
         {
             webBrowser.CoreWebView2.Navigate("https://itaku.ee/");
 
@@ -99,6 +160,8 @@ namespace ItakuDesktop
             webBrowser.CoreWebView2.ContextMenuRequested += CoreWebView2_ContextMenuRequested;
 
             isCoreInitialized = true;
+            if (queueEnhance)
+                await LoadEnhancementExtension();
         }
 
         private void WebBrowser_SourceChanged(object sender, CoreWebView2SourceChangedEventArgs e)
@@ -117,11 +180,10 @@ namespace ItakuDesktop
             checkMenuItem = trayContextMenu.Items.Add("Disable background reload");
             checkMenuItem.Click += (s, a) => SetReloadToggle();
 
-            var extensionContext = trayContextMenu.Items.Add("Enable enhancement extension");
-            extensionContext.Click += (s, a) =>
+            extensionMenuItem = trayContextMenu.Items.Add("Enable enhancement extension");
+            extensionMenuItem.Click += async (s, a) =>
             {
-                if (Directory.Exists("Extensions/itaku-enhancement-suite".FixPath()) && isCoreInitialized)
-                    LoadEnhancementExtension();
+                await LoadEnhancementExtension();
             };
 
             trayContextMenu.Items.Add("-");
@@ -144,35 +206,6 @@ namespace ItakuDesktop
             trayIcon.Visible = true;
 
             CheckStartup();
-        }
-
-        public void CheckStartup()
-        {
-            isAtStartup = WindowsUtil.IsApplicationOnStartup();
-            startupMenuItem.Text = isAtStartup ? "Delete from startup" : "Start at startup";
-        }
-
-        public void SetStartupToggle()
-        {
-            SetStartup(!isAtStartup);
-        }
-        
-        public void SetReloadToggle()
-        {
-            SetReload(!reloadToCheckNotification);
-        }
-
-        public void SetStartup(bool to)
-        {
-            isAtStartup = to;
-            startupMenuItem.Text = to ? "Delete from startup" : "Start at startup";
-            WindowsUtil.SetApplicationStartup(to);
-        }
-
-        public void SetReload(bool to)
-        {
-            checkMenuItem.Text = to ? "Disable background reload" : "Enable background reload";
-            reloadToCheckNotification = to;
         }
         #endregion
 
@@ -205,7 +238,7 @@ namespace ItakuDesktop
 
         private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
         {
-            if (dontClose)
+            if (dontClose && hideToTray)
             {
                 e.Cancel = true;
                 Hide();
@@ -216,6 +249,7 @@ namespace ItakuDesktop
         {
             if (reloadToCheckNotification)
             {
+                if (!reloadToCheckNotification) return;
                 Application.Current.Dispatcher.Invoke(() => { 
                     if(isCoreInitialized) webBrowser.Reload();
                 });
@@ -276,7 +310,15 @@ namespace ItakuDesktop
         {
             var task = webBrowser.CoreWebView2.ExecuteScriptAsync("document.body.outerHTML");
             var html = await task;
-            return JsonConvert.DeserializeObject(html).ToString();
+            try
+            {
+                return JsonConvert.DeserializeObject(html).ToString();
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine("Error: " + e.Message);
+                return null;
+            }
         }
         #endregion
 
@@ -329,11 +371,40 @@ namespace ItakuDesktop
                 var color = ChangeTheme(value);
                 Console.WriteLine($"INFO: Color fetched {color}");
                 toolbarGrid.Background = new SolidColorBrush(color);
+                ChangeIconTheme(value);
             }
             else
             {
                 Console.WriteLine($"WARNING: Body element isn't found.. somehow?");
             }
+        }
+
+        public void ChangeIconTheme(string themeString)
+        {
+            switch (themeString)
+            {
+                case "sky-pink-light-theme":
+                    Icon = GetBitmap("Resources/favicon-light.ico");
+                    trayIcon.Icon = ItakuResources.favicon_light;
+                    break;
+                case "sky-pink-navy-theme":
+                    Icon = GetBitmap("Resources/favicon-blue.ico");
+                    trayIcon.Icon = ItakuResources.favicon_blue;
+                    break;
+                case "rain-dusk-theme":
+                    Icon = GetBitmap("Resources/favicon-dusk.ico");
+                    trayIcon.Icon = ItakuResources.favicon_dusk;
+                    break;
+                default:
+                    Icon = GetBitmap("Resources/favicon-yellow.ico");
+                    trayIcon.Icon = ItakuResources.favicon_yellow;
+                    break;
+            }
+        }
+
+        public BitmapFrame GetBitmap(string name)
+        {
+            return BitmapFrame.Create(Application.GetResourceStream(new Uri(name, UriKind.RelativeOrAbsolute)).Stream);
         }
 
         public Color ChangeTheme(string themeString)
@@ -356,21 +427,100 @@ namespace ItakuDesktop
 
         public Color GetColor(string hex) => (Color)ColorConverter.ConvertFromString(hex);
         #endregion
+        
+        #region Settings
+        public void LoadSettings()
+        {
+            if(File.Exists(SettingsPath))
+            {
+                var data = JsonConvert.DeserializeObject<SettingsData>(File.ReadAllText(SettingsPath));
+                hideToTray = data.hiddenInTray;
+                reloadToCheckNotification = data.autoReload;
+                queueEnhance = data.withEnchantment;
+                reloadInterval = data.reloadInterval;
+            }
+        }
+
+        public void SaveSettings()
+        {
+            File.WriteAllText(SettingsPath, JsonConvert.SerializeObject(new SettingsData() {
+                hiddenInTray = hideToTray,
+                autoReload = reloadToCheckNotification,
+                withEnchantment = isEnhanced,
+                reloadInterval = reloadInterval
+            }));
+        }
+
+        private void SettingsButton_Click(object sender, RoutedEventArgs e)
+        {
+            if (settings == null) settings = new SettingsWindow();
+            settings.UpdateValues();
+            settings.Show();
+        }
+
+        public class SettingsData
+        {
+            public bool hiddenInTray;
+            public bool autoReload;
+            public bool withEnchantment;
+            public int reloadInterval;
+        }
+        #endregion
 
         #region Extensions
         public CoreWebView2BrowserExtension enhancementExt;
-        public async void LoadEnhancementExtension()
+        public async Task<bool> LoadEnhancementExtension()
         {
+            if(!isCoreInitialized)
+            {
+                MessageBox.Show("Browser isn't initialized yet!", "Itaku: Error");
+                return false;
+            }
+
+            if (!Directory.Exists("Extensions/itaku-enhancement-suite".FixPath()))
+            {
+                MessageBox.Show("Extension isn't found!", "Itaku: Error");
+                return false;
+            }
+
             Console.WriteLine("INFO: WebBrowser Version = " + webBrowser.CoreWebView2.Environment.BrowserVersionString);
             var version = GetBrowserVersions();
             if (version[0] >= 117)
             {
-                enhancementExt = await webBrowser.CoreWebView2.Profile.AddBrowserExtensionAsync("Extensions/itaku-enhancement-suite".FixPath());
-                await enhancementExt.EnableAsync(true);
+                if (isEnhanced)
+                {
+                    try
+                    {
+                        await enhancementExt.RemoveAsync();
+                        isEnhanced = false;
+                        return false;
+                    }
+                    catch (Exception e)
+                    {
+                        MessageBox.Show("Error occurred when removing extension: " + e.Message, "Itaku: Error");
+                        return true;
+                    }
+                }
+                else
+                {
+                    try
+                    {
+                        enhancementExt = await webBrowser.CoreWebView2.Profile.AddBrowserExtensionAsync("Extensions/itaku-enhancement-suite".FixPath());
+                        await enhancementExt.EnableAsync(true);
+                        isEnhanced = true;
+                        return true;
+                    }
+                    catch (Exception e)
+                    {
+                        MessageBox.Show("Error occurred when enabling extension: " + e.Message, "Itaku: Error");
+                        return false;
+                    }
+                }
             }
             else
             {
-                MessageBox.Show($"Your edge version doesn't support WebView2 extensions yet: {webBrowser.CoreWebView2.Environment.BrowserVersionString}");
+                MessageBox.Show($"Your edge version doesn't support WebView2 extensions yet: {webBrowser.CoreWebView2.Environment.BrowserVersionString}", "Itaku: Warning");
+                return false;
             }
         }
 
@@ -388,6 +538,35 @@ namespace ItakuDesktop
         #endregion
 
         #region Utility
+        public void CheckStartup()
+        {
+            isAtStartup = WindowsUtil.IsApplicationOnStartup();
+            startupMenuItem.Text = isAtStartup ? "Delete from startup" : "Start at startup";
+        }
+
+        public void SetStartupToggle()
+        {
+            SetStartup(!isAtStartup);
+        }
+
+        public void SetReloadToggle()
+        {
+            SetReload(!reloadToCheckNotification);
+        }
+
+        public void SetStartup(bool to)
+        {
+            isAtStartup = to;
+            startupMenuItem.Text = to ? "Delete from startup" : "Start at startup";
+            WindowsUtil.SetApplicationStartup(to);
+        }
+
+        public void SetReload(bool to)
+        {
+            checkMenuItem.Text = to ? "Disable background reload" : "Enable background reload";
+            reloadToCheckNotification = to;
+        }
+
         public void ChangeTitle(string text)
         {
             Title = text == "Itaku" ? "Itaku" : "Itaku: " + text;
