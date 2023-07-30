@@ -21,6 +21,7 @@ using NotifyIcon = System.Windows.Forms.NotifyIcon;
 using ContextMenuStrip = System.Windows.Forms.ContextMenuStrip;
 using ToolStripItem = System.Windows.Forms.ToolStripItem;
 using System.Windows.Media.Imaging;
+using System.Collections.Generic;
 #endregion
 
 namespace ItakuDesktop
@@ -44,6 +45,8 @@ namespace ItakuDesktop
         public ToolStripItem extensionMenuItem;
 
         const string notificationBadgeXPath = "//*[@id=\"mat-badge-content-5\"]";
+        const string submissionBadgeXPath = "//*[@id=\"mat-badge-content-1\"]";
+        const string messagesBadgeXPath = "//*[@id=\"mat-badge-content-0\"]";
 
         public string WebView2Path;
         public string ProfilePath;
@@ -67,6 +70,9 @@ namespace ItakuDesktop
         }
 
         public int notificationCount;
+        public int submissionCount;
+        public int messagesCount;
+
         public bool isCoreInitialized;
         private bool dontClose = true;
         #endregion
@@ -337,6 +343,8 @@ namespace ItakuDesktop
                 Console.WriteLine($"ERROR: {e.Message}");
             }
 
+            List<string> messages = new List<string>();
+            #region Notification
             var badgeNode = htmlDoc.DocumentNode.SelectSingleNode(notificationBadgeXPath);
             if (badgeNode != null)
             {
@@ -344,13 +352,7 @@ namespace ItakuDesktop
                 if (int.TryParse(badgeNode.InnerText, out currentCount))
                 {
                     if (currentCount > notificationCount)
-                    {
-                        trayIcon.BalloonTipIcon = System.Windows.Forms.ToolTipIcon.Info;
-                        trayIcon.BalloonTipTitle = "Itaku - Notification";
-                        trayIcon.BalloonTipText = $"New notifications! - {currentCount}";
-                        trayIcon.ShowBalloonTip(3000);
-                        Console.WriteLine("INFO: " + trayIcon.BalloonTipText);
-                    }
+                        messages.Add($"New notifications! - {currentCount}");
                     notificationCount = currentCount;
                 }
                 else
@@ -361,6 +363,58 @@ namespace ItakuDesktop
             else
             {
                 Console.WriteLine($"WARNING: The notification badge element isn't found? Try to sign in?");
+            }
+            #endregion
+            #region Submissions
+            var subNode = htmlDoc.DocumentNode.SelectSingleNode(submissionBadgeXPath);
+            if (subNode != null)
+            {
+                int currentCount = 0;
+                if (int.TryParse(subNode.InnerText, out currentCount))
+                {
+                    if (currentCount > submissionCount)
+                        messages.Add($"New submissions! - {currentCount}");
+                    submissionCount = currentCount;
+                }
+                else
+                {
+                    Console.WriteLine($"ERROR: Unable to parse {subNode.InnerText} to System.Int32");
+                }
+            }
+            else
+            {
+                Console.WriteLine($"WARNING: The submissions badge element isn't found?");
+            }
+            #endregion
+            #region Messages
+            var msgNode = htmlDoc.DocumentNode.SelectSingleNode(notificationBadgeXPath);
+            if (msgNode != null)
+            {
+                int currentCount = 0;
+                if (int.TryParse(msgNode.InnerText, out currentCount))
+                {
+                    if (currentCount > messagesCount)
+                        messages.Add($"New messages! - {currentCount}");
+                    messagesCount = currentCount;
+                }
+                else
+                {
+                    Console.WriteLine($"ERROR: Unable to parse {msgNode.InnerText} to System.Int32");
+                }
+            }
+            else
+            {
+                Console.WriteLine($"WARNING: The messages badge element isn't found?");
+            }
+            #endregion
+
+            if (messages.Count > 0)
+            {
+                trayIcon.BalloonTipIcon = System.Windows.Forms.ToolTipIcon.Info;
+                trayIcon.BalloonTipTitle = "Itaku - Notification";
+                trayIcon.BalloonTipText = string.Join(", ", messages);
+                trayIcon.ShowBalloonTip(3000);
+                Console.WriteLine("INFO: " + trayIcon.BalloonTipText);
             }
 
             var bodyNode = htmlDoc.DocumentNode.SelectSingleNode("body");
