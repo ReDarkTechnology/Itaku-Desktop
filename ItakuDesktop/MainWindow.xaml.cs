@@ -92,6 +92,7 @@ namespace ItakuDesktop
 
             WebView2Path = "WebView2".FixPath();
             ProfilePath = "ProfileData".FixPath();
+            if (!Directory.Exists(ProfilePath)) Directory.CreateDirectory(ProfilePath);
             SettingsPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "Itaku", "settings.json");
             var settingsDir = Path.GetDirectoryName(SettingsPath);
             if (!Directory.Exists(settingsDir)) Directory.CreateDirectory(settingsDir);
