@@ -253,7 +253,7 @@ namespace ItakuDesktop
             }
             catch (Exception err)
             {
-                File.WriteAllText("UpdateLogError.log", err.Message + err.StackTrace);
+                File.WriteAllText("UpdateLogError.log", err.Message + err.StackTrace + (err.InnerException != null ? err.InnerException.Message + err.InnerException.StackTrace : null));
             }
         }
 
