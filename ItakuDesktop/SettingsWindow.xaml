@@ -20,6 +20,7 @@
             <CheckBox x:Name="StartupCheckbox" FlowDirection="RightToLeft" HorizontalAlignment="Left" Content="Start at startup" Margin="5, 10, 0, 10" Foreground="White" Checked="CheckBox_Checked_3"/>
             <Label Content="Browsing" Foreground="White" Background="#FF232323"/>
             <CheckBox x:Name="EnhancementCheckbox" FlowDirection="RightToLeft" HorizontalAlignment="Left" Content="Enable enhancement extension" Margin="5, 10, 0, 0" Foreground="White" Checked="CheckBox_Checked_1"/>
+            <CheckBox x:Name="ExternalCheckbox" FlowDirection="RightToLeft" HorizontalAlignment="Left" Content="Redirect new window to external browser" Margin="5, 10, 0, 0" Foreground="White" Checked="CheckBox_Checked_5"/>
             <CheckBox x:Name="ReloadCheckbox" FlowDirection="RightToLeft" HorizontalAlignment="Left" Content="Auto-reload to check for notification" Margin="5, 10, 0, 0" Foreground="White"  IsChecked="True" Checked="CheckBox_Checked"/>
             <Grid Margin="0, 5, 0, 0">
                 <Label Content="Reload interval" Foreground="White"/>
@@ -34,7 +35,7 @@
                 <Label Content="Profiles" Foreground="White" Background="#FF232323"/>
                 <Button x:Name="AddProfileButton" Content="Add" Grid.Column="1" Click="AddProfileButton_Click"/>
             </Grid>
-            <ScrollViewer Height="150">
+            <ScrollViewer Height="130">
                 <StackPanel x:Name="ProfileStackPanel">
                 </StackPanel>
             </ScrollViewer>

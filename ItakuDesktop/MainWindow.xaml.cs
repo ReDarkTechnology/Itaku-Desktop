@@ -55,6 +55,7 @@ namespace ItakuDesktop
         public string SettingsPath;
         public bool customProfile;
 
+        public bool goToExternal;
         public bool checkForUpdates = true;
         public bool isAtStartup;
         public bool reloadToCheckNotification = true;
@@ -92,6 +93,8 @@ namespace ItakuDesktop
             WebView2Path = "WebView2".FixPath();
             ProfilePath = "ProfileData".FixPath();
             SettingsPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "Itaku", "settings.json");
+            var settingsDir = Path.GetDirectoryName(SettingsPath);
+            if (!Directory.Exists(settingsDir)) Directory.CreateDirectory(settingsDir);
             Console.WriteLine(SettingsPath);
             LoadSettings();
             LoadArgs();
@@ -166,6 +169,7 @@ namespace ItakuDesktop
             webBrowser.CoreWebView2.NavigationStarting += CoreWebView2_NavigationStarting;
             webBrowser.CoreWebView2.NavigationCompleted += CoreWebView2_NavigationCompleted;
             webBrowser.CoreWebView2.DOMContentLoaded += CoreWebView2_DOMContentLoaded;
+            webBrowser.CoreWebView2.NewWindowRequested += CoreWebView2_NewWindowRequested;
 
             webBrowser.CoreWebView2.Settings.IsPasswordAutosaveEnabled = true;
             webBrowser.CoreWebView2.ContextMenuRequested += CoreWebView2_ContextMenuRequested;
@@ -173,6 +177,15 @@ namespace ItakuDesktop
             isCoreInitialized = true;
             if (queueEnhance)
                 await LoadEnhancementExtension();
+        }
+
+        private void CoreWebView2_NewWindowRequested(object sender, CoreWebView2NewWindowRequestedEventArgs e)
+        {
+            if(goToExternal)
+            {
+                Process.Start(e.Uri);
+                e.Handled = true;
+            }
         }
 
         private void WebBrowser_SourceChanged(object sender, CoreWebView2SourceChangedEventArgs e)
@@ -297,6 +310,10 @@ namespace ItakuDesktop
             {
                 e.Cancel = true;
                 Hide();
+            }
+            else
+            {
+                Environment.Exit(0);
             }
         }
 
@@ -436,7 +453,7 @@ namespace ItakuDesktop
             }
             #endregion
             #region Messages
-            var msgNode = htmlDoc.DocumentNode.SelectSingleNode(notificationBadgeXPath);
+            var msgNode = htmlDoc.DocumentNode.SelectSingleNode(messagesBadgeXPath);
             if (msgNode != null)
             {
                 int currentCount = 0;
@@ -542,6 +559,7 @@ namespace ItakuDesktop
                 queueEnhance = data.withEnchantment;
                 reloadInterval = data.reloadInterval;
                 checkForUpdates = data.checkForUpdates;
+                goToExternal = data.goToExternal;
             }
         }
 
@@ -552,8 +570,9 @@ namespace ItakuDesktop
                 autoReload = reloadToCheckNotification,
                 withEnchantment = isEnhanced,
                 reloadInterval = reloadInterval,
-                checkForUpdates = checkForUpdates
-            }));
+                checkForUpdates = checkForUpdates,
+                goToExternal = goToExternal
+            }, Formatting.Indented));
         }
 
         private void SettingsButton_Click(object sender, RoutedEventArgs e)
@@ -566,6 +585,7 @@ namespace ItakuDesktop
         public class SettingsData
         {
             public bool checkForUpdates = true;
+            public bool goToExternal;
             public bool hiddenInTray;
             public bool autoReload;
             public bool withEnchantment;

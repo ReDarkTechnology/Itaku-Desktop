@@ -34,6 +34,7 @@ namespace ItakuDesktop
             EnhancementCheckbox.IsChecked = MainWindow.window.isEnhanced;
             StartupCheckbox.IsChecked = MainWindow.window.isAtStartup;
             UpdateCheckbox.IsChecked = MainWindow.window.checkForUpdates;
+            ExternalCheckbox.IsChecked = MainWindow.window.goToExternal;
             isUpdating = false;
 
             ProfileStackPanel.Children.Clear();
@@ -103,6 +104,14 @@ namespace ItakuDesktop
         {
             if (isUpdating) return;
             MainWindow.window.checkForUpdates = UpdateCheckbox.IsChecked.HasValue ? UpdateCheckbox.IsChecked.Value : false;
+            MainWindow.window.SaveSettings();
+        }
+
+        // External Browser
+        private void CheckBox_Checked_5(object sender, RoutedEventArgs e)
+        {
+            if (isUpdating) return;
+            MainWindow.window.goToExternal = ExternalCheckbox.IsChecked.HasValue ? ExternalCheckbox.IsChecked.Value : false;
             MainWindow.window.SaveSettings();
         }
 
