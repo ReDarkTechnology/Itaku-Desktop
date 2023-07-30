@@ -16,6 +16,7 @@
         <StackPanel Margin="10">
             <Label Content="App" Foreground="White" Background="#FF232323"/>
             <CheckBox x:Name="HideInTrayCheckbox" FlowDirection="RightToLeft" HorizontalAlignment="Left" Content="Hide in tray icon" Margin="5, 10, 0, 0" Foreground="White" IsChecked="True" Checked="CheckBox_Checked_2"/>
+            <CheckBox x:Name="UpdateCheckbox" FlowDirection="RightToLeft" HorizontalAlignment="Left" Content="Check for updates" Margin="5, 10, 0, 0" Foreground="White" IsChecked="True" Checked="CheckBox_Checked_4"/>
             <CheckBox x:Name="StartupCheckbox" FlowDirection="RightToLeft" HorizontalAlignment="Left" Content="Start at startup" Margin="5, 10, 0, 10" Foreground="White" Checked="CheckBox_Checked_3"/>
             <Label Content="Browsing" Foreground="White" Background="#FF232323"/>
             <CheckBox x:Name="EnhancementCheckbox" FlowDirection="RightToLeft" HorizontalAlignment="Left" Content="Enable enhancement extension" Margin="5, 10, 0, 0" Foreground="White" Checked="CheckBox_Checked_1"/>

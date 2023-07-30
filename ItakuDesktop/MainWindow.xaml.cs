@@ -44,6 +44,8 @@ namespace ItakuDesktop
         public ToolStripItem checkMenuItem;
         public ToolStripItem extensionMenuItem;
 
+        const int appVersion = 2;
+        const string updateLink = "https://raw.githubusercontent.com/ReDarkTechnology/Itaku-Desktop/main/current.json";
         const string notificationBadgeXPath = "//*[@id=\"mat-badge-content-5\"]";
         const string submissionBadgeXPath = "//*[@id=\"mat-badge-content-1\"]";
         const string messagesBadgeXPath = "//*[@id=\"mat-badge-content-0\"]";
@@ -53,6 +55,7 @@ namespace ItakuDesktop
         public string SettingsPath;
         public bool customProfile;
 
+        public bool checkForUpdates = true;
         public bool isAtStartup;
         public bool reloadToCheckNotification = true;
         public bool hideToTray = true;
@@ -134,6 +137,8 @@ namespace ItakuDesktop
             DockPanel.SetDock(webBrowser, Dock.Top);
 
             InitializeNotifyIcon();
+            if (checkForUpdates)
+                CheckUpdate();
         }
 
         public void LoadArgs()
@@ -212,6 +217,50 @@ namespace ItakuDesktop
             trayIcon.Visible = true;
 
             CheckStartup();
+        }
+        #endregion
+        
+        #region Update
+        public void CheckUpdate()
+        {
+            using (WebClient client = new WebClient())
+            {
+                client.DownloadStringCompleted += Client_DownloadStringCompleted;
+                client.DownloadStringAsync(new Uri(updateLink));
+            }
+        }
+
+        private void Client_DownloadStringCompleted(object sender, DownloadStringCompletedEventArgs e)
+        {
+            try
+            {
+                if (e.Error != null)
+                {
+                    File.WriteAllText("UpdateLogError.log", e.Error.Message + e.Error.StackTrace);
+                }
+
+                if (!e.Cancelled)
+                {
+                    var data = JsonConvert.DeserializeObject<UpdateInfo>(e.Result);
+                    if(data.version > appVersion)
+                    {
+                        if(MessageBox.Show("There's a new update found! Do you want to download it?", "Itaku: Update", MessageBoxButton.YesNo) == MessageBoxResult.Yes)
+                        {
+                            Process.Start(data.url);
+                        }
+                    }
+                }
+            }
+            catch (Exception err)
+            {
+                File.WriteAllText("UpdateLogError.log", err.Message + err.StackTrace);
+            }
+        }
+
+        public class UpdateInfo
+        {
+            public int version;
+            public string url;
         }
         #endregion
 
@@ -492,6 +541,7 @@ namespace ItakuDesktop
                 reloadToCheckNotification = data.autoReload;
                 queueEnhance = data.withEnchantment;
                 reloadInterval = data.reloadInterval;
+                checkForUpdates = data.checkForUpdates;
             }
         }
 
@@ -501,7 +551,8 @@ namespace ItakuDesktop
                 hiddenInTray = hideToTray,
                 autoReload = reloadToCheckNotification,
                 withEnchantment = isEnhanced,
-                reloadInterval = reloadInterval
+                reloadInterval = reloadInterval,
+                checkForUpdates = checkForUpdates
             }));
         }
 
@@ -514,6 +565,7 @@ namespace ItakuDesktop
 
         public class SettingsData
         {
+            public bool checkForUpdates = true;
             public bool hiddenInTray;
             public bool autoReload;
             public bool withEnchantment;

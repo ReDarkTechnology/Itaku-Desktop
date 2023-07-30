@@ -33,6 +33,7 @@ namespace ItakuDesktop
             HideInTrayCheckbox.IsChecked = MainWindow.window.hideToTray;
             EnhancementCheckbox.IsChecked = MainWindow.window.isEnhanced;
             StartupCheckbox.IsChecked = MainWindow.window.isAtStartup;
+            UpdateCheckbox.IsChecked = MainWindow.window.checkForUpdates;
             isUpdating = false;
 
             ProfileStackPanel.Children.Clear();
@@ -48,6 +49,7 @@ namespace ItakuDesktop
             if (isUpdating) return;
             MainWindow.window.reloadInterval = (int)ReloadSlider.Value;
             ReloadTextBox.Text = ReloadSlider.Value.ToString();
+            MainWindow.window.SaveSettings();
         }
 
         // Reload interval
@@ -57,6 +59,7 @@ namespace ItakuDesktop
             isUpdating = true;
             if (double.TryParse(ReloadTextBox.Text, out double val))
                 ReloadSlider.Value = val;
+            MainWindow.window.SaveSettings();
             isUpdating = false;
         }
 
@@ -65,6 +68,7 @@ namespace ItakuDesktop
         {
             if (isUpdating) return;
             MainWindow.window.SetReload(ReloadCheckbox.IsChecked.HasValue ? ReloadCheckbox.IsChecked.Value : false);
+            MainWindow.window.SaveSettings();
         }
 
         // Enhancement
@@ -74,6 +78,7 @@ namespace ItakuDesktop
             isUpdating = true;
             bool to = await MainWindow.window.LoadEnhancementExtension();
             EnhancementCheckbox.IsChecked = to;
+            MainWindow.window.SaveSettings();
             isUpdating = false;
         }
 
@@ -82,6 +87,7 @@ namespace ItakuDesktop
         {
             if (isUpdating) return;
             MainWindow.window.hideToTray = HideInTrayCheckbox.IsChecked.HasValue ? HideInTrayCheckbox.IsChecked.Value : false;
+            MainWindow.window.SaveSettings();
         }
 
         // Startup
@@ -89,6 +95,15 @@ namespace ItakuDesktop
         {
             if (isUpdating) return;
             MainWindow.window.SetStartup(StartupCheckbox.IsChecked.HasValue ? StartupCheckbox.IsChecked.Value : false);
+            MainWindow.window.SaveSettings();
+        }
+
+        // Update
+        private void CheckBox_Checked_4(object sender, RoutedEventArgs e)
+        {
+            if (isUpdating) return;
+            MainWindow.window.checkForUpdates = UpdateCheckbox.IsChecked.HasValue ? UpdateCheckbox.IsChecked.Value : false;
+            MainWindow.window.SaveSettings();
         }
 
         private void AddProfileButton_Click(object sender, RoutedEventArgs e)
@@ -109,7 +124,7 @@ namespace ItakuDesktop
                 button.Content = info.name == "_Default_INTERNAL" ? "Default" : info.name;
                 button.Height = 25;
                 button.Click += (e, a) => {
-                    Process.Start(System.Reflection.Assembly.GetExecutingAssembly().CodeBase.Replace("file:\\", ""), path);
+                    Process.Start(System.Reflection.Assembly.GetExecutingAssembly().CodeBase.Replace("file:\\", ""), $"\"{path}\"");
                 };
                 if (info.name == "_Default_INTERNAL")
                     ProfileStackPanel.Children.Insert(0, button);
