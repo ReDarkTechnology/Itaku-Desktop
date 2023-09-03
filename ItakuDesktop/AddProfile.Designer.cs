@@ -40,7 +40,10 @@
             // 
             this.nameBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.nameBox.Location = new System.Drawing.Point(54, 49);
+            this.nameBox.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(40)))), ((int)(((byte)(40)))), ((int)(((byte)(40)))));
+            this.nameBox.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.nameBox.ForeColor = System.Drawing.Color.White;
+            this.nameBox.Location = new System.Drawing.Point(54, 44);
             this.nameBox.Name = "nameBox";
             this.nameBox.Size = new System.Drawing.Size(271, 20);
             this.nameBox.TabIndex = 0;
@@ -58,7 +61,7 @@
             // nameLabel
             // 
             this.nameLabel.AutoSize = true;
-            this.nameLabel.Location = new System.Drawing.Point(13, 52);
+            this.nameLabel.Location = new System.Drawing.Point(13, 47);
             this.nameLabel.Name = "nameLabel";
             this.nameLabel.Size = new System.Drawing.Size(35, 13);
             this.nameLabel.TabIndex = 2;
@@ -67,8 +70,9 @@
             // createButton
             // 
             this.createButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.createButton.ForeColor = System.Drawing.Color.Black;
-            this.createButton.Location = new System.Drawing.Point(250, 75);
+            this.createButton.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.createButton.ForeColor = System.Drawing.Color.White;
+            this.createButton.Location = new System.Drawing.Point(250, 74);
             this.createButton.Name = "createButton";
             this.createButton.Size = new System.Drawing.Size(75, 23);
             this.createButton.TabIndex = 3;
@@ -89,7 +93,7 @@
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(10)))), ((int)(((byte)(10)))), ((int)(((byte)(10)))));
+            this.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(20)))), ((int)(((byte)(20)))), ((int)(((byte)(20)))));
             this.ClientSize = new System.Drawing.Size(337, 111);
             this.Controls.Add(this.infoLabel);
             this.Controls.Add(this.createButton);
@@ -97,8 +101,10 @@
             this.Controls.Add(this.titleLabel);
             this.Controls.Add(this.nameBox);
             this.ForeColor = System.Drawing.Color.White;
+            this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedToolWindow;
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Name = "AddProfile";
+            this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
             this.Text = "Add Profile";
             this.ResumeLayout(false);
             this.PerformLayout();

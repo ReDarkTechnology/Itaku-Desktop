@@ -1,11 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 
 namespace ItakuDesktop
@@ -22,13 +15,9 @@ namespace ItakuDesktop
         {
             var result = func.Invoke(nameBox.Text);
             if(result.isSuccessful)
-            {
                 Close();
-            }
             else
-            {
                 infoLabel.Text = result.errorMessage;
-            }
         }
     }
 

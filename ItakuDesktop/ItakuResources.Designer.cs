@@ -22,7 +22,7 @@ namespace ItakuDesktop {
     [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "15.0.0.0")]
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
-    internal class ItakuResources {
+    public class ItakuResources {
         
         private static global::System.Resources.ResourceManager resourceMan;
         
@@ -36,7 +36,7 @@ namespace ItakuDesktop {
         ///   Returns the cached ResourceManager instance used by this class.
         /// </summary>
         [global::System.ComponentModel.EditorBrowsableAttribute(global::System.ComponentModel.EditorBrowsableState.Advanced)]
-        internal static global::System.Resources.ResourceManager ResourceManager {
+        public static global::System.Resources.ResourceManager ResourceManager {
             get {
                 if (object.ReferenceEquals(resourceMan, null)) {
                     global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("ItakuDesktop.ItakuResources", typeof(ItakuResources).Assembly);
@@ -51,7 +51,7 @@ namespace ItakuDesktop {
         ///   resource lookups using this strongly typed resource class.
         /// </summary>
         [global::System.ComponentModel.EditorBrowsableAttribute(global::System.ComponentModel.EditorBrowsableState.Advanced)]
-        internal static global::System.Globalization.CultureInfo Culture {
+        public static global::System.Globalization.CultureInfo Culture {
             get {
                 return resourceCulture;
             }
@@ -63,7 +63,7 @@ namespace ItakuDesktop {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Icon similar to (Icon).
         /// </summary>
-        internal static System.Drawing.Icon favicon_blue {
+        public static System.Drawing.Icon favicon_blue {
             get {
                 object obj = ResourceManager.GetObject("favicon_blue", resourceCulture);
                 return ((System.Drawing.Icon)(obj));
@@ -73,7 +73,7 @@ namespace ItakuDesktop {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Icon similar to (Icon).
         /// </summary>
-        internal static System.Drawing.Icon favicon_dusk {
+        public static System.Drawing.Icon favicon_dusk {
             get {
                 object obj = ResourceManager.GetObject("favicon_dusk", resourceCulture);
                 return ((System.Drawing.Icon)(obj));
@@ -83,7 +83,7 @@ namespace ItakuDesktop {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Icon similar to (Icon).
         /// </summary>
-        internal static System.Drawing.Icon favicon_light {
+        public static System.Drawing.Icon favicon_light {
             get {
                 object obj = ResourceManager.GetObject("favicon_light", resourceCulture);
                 return ((System.Drawing.Icon)(obj));
@@ -93,10 +93,20 @@ namespace ItakuDesktop {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Icon similar to (Icon).
         /// </summary>
-        internal static System.Drawing.Icon favicon_yellow {
+        public static System.Drawing.Icon favicon_yellow {
             get {
                 object obj = ResourceManager.GetObject("favicon_yellow", resourceCulture);
                 return ((System.Drawing.Icon)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        public static System.Drawing.Bitmap itakuLogo {
+            get {
+                object obj = ResourceManager.GetObject("itakuLogo", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
             }
         }
     }
