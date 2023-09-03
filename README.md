@@ -1,6 +1,6 @@
 # Itaku Desktop
 An unofficial client for itaku.ee! Only supports Windows for now
-![image](https://github.com/ReDarkTechnology/Itaku-Desktop/assets/53262904/f8cf73f4-d5f9-412a-a7dd-481456f0f504)
+![Screenshot_21](https://github.com/ReDarkTechnology/Itaku-Desktop/assets/53262904/2c8b4f56-dc8c-4641-a727-b5cc6786e2f2)
 
 ## Features
 - Keeping itself alive in the background (like Discord)
