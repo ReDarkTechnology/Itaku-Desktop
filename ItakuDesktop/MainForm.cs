@@ -37,7 +37,7 @@ namespace ItakuDesktop
         public ToolStripItem checkMenuItem;
         public ToolStripItem extensionMenuItem;
 
-        const int appVersion = 3;
+        const int appVersion = 4;
         const string updateLink = "https://raw.githubusercontent.com/ReDarkTechnology/Itaku-Desktop/main/current.json";
 
         public string WebView2Path;
@@ -531,7 +531,7 @@ namespace ItakuDesktop
             {
                 if (e.Error != null)
                 {
-                    File.WriteAllText("UpdateLogError.log", e.Error.Message + e.Error.StackTrace);
+                    File.WriteAllText("UpdateLogError.log".FixPath(), e.Error.Message + e.Error.StackTrace);
                 }
 
                 if (!e.Cancelled)
@@ -548,7 +548,7 @@ namespace ItakuDesktop
             }
             catch (Exception err)
             {
-                File.WriteAllText("UpdateLogError.log", err.Message + err.StackTrace + (err.InnerException != null ? err.InnerException.Message + err.InnerException.StackTrace : null));
+                File.WriteAllText("UpdateLogError.log".FixPath(), err.Message + err.StackTrace + (err.InnerException != null ? err.InnerException.Message + err.InnerException.StackTrace : null));
             }
         }
 
