@@ -1,5 +1,9 @@
 // Made by Bunzhida for Itaku Desktop, also works as a user script!
+/** @type {string} */
 const overlaySelector = "div[class='cdk-overlay-pane image-dialog']";
+
+/** @type {Element} */
+var cardButton = null;
 
 /**
  * Wait for a specific element in a parent
@@ -59,9 +63,19 @@ function modifyAndResizeMatCard(element)
     const centerContainer = frameContainer.children[0].children[0];
     centerContainer.setAttribute("class", "center");
 
+    cardButton = centerContainer.children[0].children[1].children[0].children[3].children[0];
+
     const imageContainer = centerContainer.children[0].children[0].children[0];
+    // Make it so that the cursor changes to hand when hovering the image
+    imageContainer.parentNode.style.cursor = "pointer";
+    imageContainer.parentNode.addEventListener("click", onHrefClick);
     imageContainer.setAttribute("class", "mat-card-image ng-star-inserted");
-    imageContainer.setAttribute("style", "margin-top:0.5vh; height: 99vh;");
+    imageContainer.setAttribute("style", "margin-top:0.5vh; max-width: 100%; max-height: 105vh; height: auto;");
+}
+
+function onHrefClick()
+{
+    open(cardButton.getAttribute("href"), "_blank");
 }
 
 // Let's start waiting -w-
