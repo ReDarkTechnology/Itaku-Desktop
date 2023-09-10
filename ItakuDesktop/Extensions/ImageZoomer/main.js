@@ -1,4 +1,21 @@
 // Made by Bunzhida for Itaku Desktop, also works as a user script!
+// ==UserScript==
+// @name        Itaku Card Resizer
+// @namespace   https://github.com/ReDarkTechnology/
+// @version     1.0
+// @date        2023-9-10
+// @author      Bunzhida
+// @description Viewing images better on itaku.ee! The card fills the whole screen, so it no longer covers the small part of the screen
+// @homepage    https://gist.github.com/ReDarkTechnology/ccbe5bbe7ceaffcf357ccf776680463d
+// @icon        https://itaku.ee/assets/favicon-blue.ico
+// @updateURL   https://gist.githubusercontent.com/ReDarkTechnology/ccbe5bbe7ceaffcf357ccf776680463d/raw/f2321d8e29ffbd2a187a54f42cc9d91bf11cfe47/helper.user.js
+// @downloadURL https://gist.githubusercontent.com/ReDarkTechnology/ccbe5bbe7ceaffcf357ccf776680463d/raw/f2321d8e29ffbd2a187a54f42cc9d91bf11cfe47/helper.user.js
+// @include     http://*
+// @include     https://*
+// @run-at      document-end
+// @connect     itaku.ee
+// @connect     *
+// ==/UserScript==
 /** @type {string} */
 const overlaySelector = "div[class='cdk-overlay-pane image-dialog']";
 
@@ -66,15 +83,14 @@ function modifyAndResizeMatCard(element)
     cardButton = centerContainer.children[0].children[1].children[0].children[3].children[0];
 
     const imageContainer = centerContainer.children[0].children[0].children[0];
-    // Make it so that the cursor changes to hand when hovering the image
-    imageContainer.parentNode.style.cursor = "pointer";
-    imageContainer.parentNode.addEventListener("click", onHrefClick);
+    imageContainer.addEventListener("click", onHrefClick);
     imageContainer.setAttribute("class", "mat-card-image ng-star-inserted");
     imageContainer.setAttribute("style", "margin-top:0.5vh; max-width: 100%; max-height: 105vh; height: auto;");
 }
 
 function onHrefClick()
 {
+    if(cardButton === null) return;
     open(cardButton.getAttribute("href"), "_blank");
 }
 
