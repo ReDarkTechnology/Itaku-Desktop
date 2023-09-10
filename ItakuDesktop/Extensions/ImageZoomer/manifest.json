@@ -1,0 +1,8 @@
+{
+  "id":"mat_card_resizer",
+  "name":"Itaku Card Resizer",
+  "author":"Bunzhida",
+  "version":1,
+  "manifest_version":1,
+  "main_script":"main.lua"
+}
